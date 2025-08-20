@@ -13,8 +13,9 @@ for (const p of envCandidates) {
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-
-const authRoutes = require('./routes/auth');
+const cookieParser = require('cookie-parser');
+const { connectDB } = require('./config/db');
+const routes = require('./routes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 const itemRoutes = require('./routes/items');
 
@@ -22,18 +23,14 @@ const app = express();
 
 // Middlewares
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN ? process.env.CLIENT_ORIGIN.split(',') : '*',
-  credentials: false
+  origin: process.env.CLIENT_ORIGIN ? process.env.CLIENT_ORIGIN.split(',') : 'http://localhost:5173',
+  credentials: true
 }));
 app.use(express.json());
-
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
+app.use(cookieParser());
 
 // Routes
-app.use('/api/auth', authRoutes);
+app.use('/api', routes);
 app.use('/api/items', itemRoutes);
 
 // 404 and error handling
@@ -42,16 +39,9 @@ app.use(errorHandler);
 
 // DB Connection and server start
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || '';
-
 async function start() {
   try {
-    if (!MONGO_URI) {
-      throw new Error('MONGO_URI is not set');
-    }
-    await mongoose.connect(MONGO_URI, {
-      dbName: process.env.MONGO_DB_NAME || undefined
-    });
+    await connectDB();
     // eslint-disable-next-line no-console
     console.log('Connected to MongoDB');
     app.listen(PORT, () => {

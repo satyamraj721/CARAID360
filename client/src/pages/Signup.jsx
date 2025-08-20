@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { useAuth } from '../state/AuthContext.jsx'
+import { useAuth } from '../context/AuthContext'
 
 export default function Signup() {
   const { signup } = useAuth()
@@ -16,7 +16,7 @@ export default function Signup() {
     setError('')
     setLoading(true)
     try {
-      await signup(name, email, password)
+      await signup({ name, email, password })
       navigate('/dashboard')
     } catch (err) {
       setError(err?.response?.data?.message || 'Signup failed')

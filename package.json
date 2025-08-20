@@ -10,10 +10,11 @@
     "start": "npm --prefix server run start",
     "dev": "concurrently \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
     "setup": "npm install && npm --prefix server install && npm --prefix client install",
-    "build": "npm --prefix client run build"
+    "build": "npm --prefix client run build",
+    "generate:assets": "npm i -D sharp && node brand/generate-assets.mjs"
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "sharp": "^0.34.3"
   }
 }
-
